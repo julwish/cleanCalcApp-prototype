@@ -1,1032 +1,1644 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Клининг-Калькулятор - Прототип</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* Мобильный контейнер */
-        .mobile-frame {
-            width: 375px;
-            height: 812px;
-            background: #f8f9fa;
-            border-radius: 40px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Статус бар */
-        .status-bar {
-            height: 44px;
-            background: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 14px;
-            font-weight: 600;
-            position: relative;
-            z-index: 100;
-        }
-
-        .status-bar .time {
-            font-weight: 600;
-        }
-
-        .status-bar .icons {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-
-        /* Header */
-        .app-header {
-            background: white;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .back-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #059669;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 18px;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: #059669;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-        }
-
-        /* Контент */
-        .screen-content {
-            height: calc(100% - 44px - 60px);
-            overflow-y: auto;
-            background: #f8f9fa;
-        }
-
-        .screen {
-            display: none;
-            padding: 20px;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* Заголовки экранов */
-        .screen-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #1a1a1a;
-        }
-
-        .screen-subtitle {
-            font-size: 15px;
-            color: #6b7280;
-            margin-bottom: 24px;
-        }
-
-        /* Карточки */
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-
-        /* Формы */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 16px;
-            background: #f9fafb;
-            transition: all 0.2s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #059669;
-            background: white;
-        }
-
-        .input-with-unit {
-            position: relative;
-        }
-
-        .input-unit {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        /* Селектор */
-        .selector {
-            background: #f9fafb;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .selector-item {
-            padding: 14px 16px;
-            border-bottom: 1px solid #e5e7eb;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .selector-item:last-child {
-            border-bottom: none;
-        }
-
-        .selector-item.active {
-            background: #d1fae5;
-            color: #059669;
-            font-weight: 500;
-        }
-
-        /* Чекбоксы */
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px;
-            background: #f9fafb;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .checkbox-item.checked {
-            background: #d1fae5;
-            border: 1px solid #059669;
-        }
-
-        .checkbox-item input {
-            width: 20px;
-            height: 20px;
-            accent-color: #059669;
-        }
-
-        /* Слайдер */
-        .slider-container {
-            margin-top: 10px;
-        }
-
-        .slider-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #6b7280;
-            margin-top: 8px;
-        }
-
-        .slider-labels .active {
-            color: #059669;
-            font-weight: 600;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: #e5e7eb;
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #059669;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
-        }
-
-        /* Автокомплит */
-        .autocomplete-list {
-            margin-top: 12px;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .autocomplete-item {
-            padding: 14px 16px;
-            border-bottom: 1px solid #e5e7eb;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .autocomplete-item:last-child {
-            border-bottom: none;
-        }
-
-        .autocomplete-item:hover {
-            background: #f9fafb;
-        }
-
-        .autocomplete-icon {
-            color: #059669;
-            font-size: 18px;
-        }
-
-        .autocomplete-text {
-            flex: 1;
-        }
-
-        .autocomplete-title {
-            font-weight: 500;
-            color: #1a1a1a;
-        }
-
-        .autocomplete-subtitle {
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: 2px;
-        }
-
-        /* Кнопки */
-        .btn-primary {
-            width: 100%;
-            padding: 18px;
-            background: #059669;
-            color: white;
-            border: none;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 20px;
-        }
-
-        .btn-primary:hover {
-            background: #047857;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .btn-secondary {
-            padding: 12px 24px;
-            background: white;
-            color: #059669;
-            border: 2px solid #059669;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-secondary:hover {
-            background: #d1fae5;
-        }
-
-        /* Информационные блоки */
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .info-value {
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-
-        .info-value.large {
-            font-size: 24px;
-            color: #059669;
-        }
-
-        /* Карточки исполнителей */
-        .executor-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .executor-card.best {
-            border-color: #059669;
-            background: #f0fdf4;
-        }
-
-        .executor-card.locked {
-            opacity: 0.5;
-            background: #f9fafb;
-        }
-
-        .executor-badge {
-            display: inline-block;
-            background: #059669;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .executor-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .executor-name {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .executor-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: #d1fae5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: #059669;
-            font-size: 18px;
-        }
-
-        .executor-info h4 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-
-        .executor-rating {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: #f59e0b;
-            font-size: 14px;
-        }
-
-        .executor-stats {
-            display: flex;
-            gap: 16px;
-            margin: 12px 0;
-            font-size: 14px;
-            color: #6b7280;
-        }
-
-        .executor-stats span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .executor-profit {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .profit-label {
-            font-size: 14px;
-            color: #6b7280;
-        }
-
-        .profit-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #059669;
-        }
-
-        .executor-card.locked .profit-value {
-            color: #9ca3af;
-        }
-
-        .lock-reason {
-            background: #f3f4f6;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: 12px;
-        }
-
-        /* Нижняя навигация */
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: white;
-            border-top: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            color: #9ca3af;
-            transition: color 0.2s;
-        }
-
-        .nav-item.active {
-            color: #059669;
-        }
-
-        .nav-icon {
-            font-size: 24px;
-        }
-
-        .nav-label {
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        /* Утилиты */
-        .text-muted {
-            color: #6b7280;
-            font-size: 13px;
-        }
-
-        .divider {
-            height: 1px;
-            background: #e5e7eb;
-            margin: 16px 0;
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin: 24px 0 16px;
-            color: #1a1a1a;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            background: #d1fae5;
-            color: #059669;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* Скроллбар */
-        .screen-content::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .screen-content::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 2px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Чисто. — Санкт-Петербург</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    background: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    font-size: 15px;
+    color: #1a1a1a;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .iphone-frame {
+    width: 390px;
+    height: 844px;
+    background: #000;
+    border-radius: 50px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 2px #1a1a1a, 0 0 0 4px #333, 0 0 0 6px #1a1a1a, 0 30px 80px rgba(0,0,0,0.5);
+  }
+
+  .dynamic-island {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 126px;
+    height: 37px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 1000;
+  }
+
+  .status-bar {
+    height: 54px;
+    background: #F5F6F8;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 14px 32px 0;
+    font-size: 15px;
+    font-weight: 600;
+    position: relative;
+    z-index: 100;
+  }
+  .status-bar .time { font-weight: 600; letter-spacing: -0.3px; }
+  .status-bar .icons { display: flex; gap: 5px; align-items: center; font-size: 14px; }
+
+  .app-header {
+    background: #F5F6F8;
+    padding: 8px 20px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #2D7A5F;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    background: #2D7A5F;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+  }
+
+  .connection-status {
+    position: absolute;
+    top: 54px;
+    left: 0;
+    right: 0;
+    padding: 6px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    z-index: 99;
+    transition: all 0.3s;
+  }
+  .connection-status.online { background: #E8F3EE; color: #2D7A5F; }
+  .connection-status.offline { background: #FEE2E2; color: #DC2626; }
+
+  .content {
+    height: calc(100% - 54px - 88px);
+    overflow-y: auto;
+    padding-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .content::-webkit-scrollbar { width: 0; }
+
+  .screen { display: none; padding: 0 20px; }
+  .screen.active { display: block; }
+
+  .page-title {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
+  }
+  .page-subtitle {
+    font-size: 15px;
+    color: #6B7280;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1a1a1a;
+  }
+
+  /* ============ WELCOME SCREEN ============ */
+  #screen-welcome {
+    padding: 0;
+    background: linear-gradient(180deg, #F0FDF4 0%, #F5F6F8 100%);
+    height: 100%;
+    overflow-y: auto;
+    display: none;
+    flex-direction: column;
+  }
+  #screen-welcome.active { display: flex; }
+
+  .welcome-hero {
+    padding: 40px 24px 30px;
+    text-align: center;
+    position: relative;
+  }
+
+  .welcome-logo-wrap {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 24px;
+    position: relative;
+    animation: logoPulse 2.5s ease-in-out infinite;
+  }
+  .welcome-logo {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2D7A5F 0%, #1F5A45 100%);
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 56px;
+    box-shadow: 0 20px 40px rgba(45, 122, 95, 0.3);
+    position: relative;
+    z-index: 2;
+  }
+  .welcome-logo-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px;
+    height: 140px;
+    border: 2px solid rgba(45, 122, 95, 0.2);
+    border-radius: 36px;
+    animation: ringPulse 2.5s ease-in-out infinite;
+  }
+  .welcome-logo-ring-2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px;
+    height: 160px;
+    border: 1px solid rgba(45, 122, 95, 0.1);
+    border-radius: 40px;
+    animation: ringPulse 2.5s ease-in-out infinite 0.3s;
+  }
+
+  @keyframes logoPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  @keyframes ringPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.3; }
+  }
+
+  .welcome-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #1a1a1a;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+    animation: fadeSlideUp 0.6s ease-out 0.2s both;
+  }
+  .welcome-tagline {
+    font-size: 17px;
+    color: #2D7A5F;
+    font-weight: 600;
+    margin-bottom: 12px;
+    animation: fadeSlideUp 0.6s ease-out 0.35s both;
+  }
+  .welcome-subtitle {
+    font-size: 14px;
+    color: #6B7280;
+    line-height: 1.5;
+    animation: fadeSlideUp 0.6s ease-out 0.5s both;
+  }
+
+  .welcome-region {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2D7A5F;
+    margin-top: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    animation: fadeSlideUp 0.6s ease-out 0.6s both;
+  }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .welcome-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 24px;
+    margin-bottom: 12px;
+    animation: fadeSlideUp 0.6s ease-out 0.7s both;
+  }
+
+  .quick-actions {
+    padding: 0 24px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .quick-action {
+    background: white;
+    border-radius: 18px;
+    padding: 18px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid transparent;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    animation: fadeSlideUp 0.6s ease-out both;
+    position: relative;
+    overflow: hidden;
+  }
+  .quick-action:nth-child(1) { animation-delay: 0.75s; }
+  .quick-action:nth-child(2) { animation-delay: 0.85s; }
+  .quick-action:nth-child(3) { animation-delay: 0.95s; }
+  .quick-action:nth-child(4) { animation-delay: 1.05s; }
+  .quick-action:nth-child(5) { animation-delay: 1.15s; grid-column: span 2; }
+
+  .quick-action:active {
+    transform: scale(0.96);
+    border-color: #2D7A5F;
+  }
+  .quick-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  }
+
+  .quick-action-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .quick-action-icon.green { background: #E8F3EE; }
+  .quick-action-icon.blue { background: #DBEAFE; }
+  .quick-action-icon.orange { background: #FEF3C7; }
+  .quick-action-icon.purple { background: #EDE9FE; }
+  .quick-action-icon.red { background: #FEE2E2; }
+
+  .quick-action-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+  .quick-action-desc {
+    font-size: 12px;
+    color: #6B7280;
+    line-height: 1.4;
+  }
+  .quick-action-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #DC2626;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .welcome-start-btn {
+    margin: 10px 24px 20px;
+    padding: 18px;
+    background: linear-gradient(135deg, #2D7A5F 0%, #1F5A45 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 10px 25px rgba(45, 122, 95, 0.3);
+    animation: fadeSlideUp 0.6s ease-out 1.25s both;
+    transition: all 0.2s;
+  }
+  .welcome-start-btn:active { transform: scale(0.98); }
+
+  .welcome-footer {
+    text-align: center;
+    padding: 0 24px 30px;
+    font-size: 12px;
+    color: #9CA3AF;
+    animation: fadeSlideUp 0.6s ease-out 1.4s both;
+  }
+
+  /* ============ FORMS ============ */
+  .steps {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .step {
+    flex: 1;
+    height: 4px;
+    background: #E5E7EB;
+    border-radius: 2px;
+  }
+  .step.active { background: #2D7A5F; }
+  .step.completed { background: #2D7A5F; opacity: 0.5; }
+
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+  }
+  .input-wrap {
+    position: relative;
+    background: #F5F6F8;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .input-wrap input {
+    width: 100%;
+    padding: 14px 50px 14px 16px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+  }
+  .input-unit {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6B7280;
+    font-size: 14px;
+  }
+
+  .dropdown {
+    background: #F5F6F8;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .dropdown-header {
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+    background: #F5F6F8;
+  }
+  .dropdown-header .chevron { transition: transform 0.2s; color: #6B7280; }
+  .dropdown-header.open .chevron { transform: rotate(180deg); }
+  .dropdown-menu { display: none; background: #F5F6F8; border-top: 1px solid #E5E7EB; }
+  .dropdown-menu.open { display: block; }
+  .dropdown-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #4B5563;
+  }
+  .dropdown-item:hover { background: #EEF0F2; }
+  .dropdown-item.selected { background: #E8F3EE; color: #2D7A5F; font-weight: 500; }
+  .dropdown-item.selected::after { content: '✓'; color: #2D7A5F; font-weight: 700; }
+
+  .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #1a1a1a;
+  }
+  .checkbox-item input { display: none; }
+  .checkbox-box {
+    width: 22px; height: 22px;
+    border: 2px solid #D1D5DB;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .checkbox-item input:checked + .checkbox-box { background: #2D7A5F; border-color: #2D7A5F; }
+  .checkbox-item input:checked + .checkbox-box::after { content: '✓'; color: white; font-size: 14px; font-weight: 700; }
+
+  .slider-wrap { padding: 8px 0; }
+  .slider-track { position: relative; height: 40px; display: flex; align-items: center; }
+  .slider-line { position: absolute; left: 0; right: 0; height: 4px; background: #E5E7EB; border-radius: 2px; }
+  .slider-fill { position: absolute; left: 0; height: 4px; background: #2D7A5F; border-radius: 2px; transition: width 0.2s; }
+  .slider-dots { position: absolute; left: 0; right: 0; display: flex; justify-content: space-between; }
+  .slider-dot {
+    width: 20px; height: 20px; border-radius: 50%; background: white;
+    border: 3px solid #E5E7EB; cursor: pointer; transition: all 0.2s;
+    position: relative; z-index: 2;
+  }
+  .slider-dot.active { border-color: #2D7A5F; box-shadow: 0 0 0 4px rgba(45, 122, 95, 0.15); }
+  .slider-dot.active::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); width: 8px; height: 8px;
+    background: #2D7A5F; border-radius: 50%;
+  }
+  .slider-labels { display: flex; justify-content: space-between; font-size: 13px; color: #9CA3AF; margin-top: 4px; }
+  .slider-labels .active { color: #2D7A5F; font-weight: 600; }
+
+  .btn-primary {
+    width: 100%; padding: 18px; background: #2D7A5F; color: white;
+    border: none; border-radius: 14px; font-size: 16px; font-weight: 600;
+    cursor: pointer; font-family: inherit; line-height: 1.3;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: #246650; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-outline {
+    padding: 10px 20px; background: white; color: #2D7A5F;
+    border: 1.5px solid #2D7A5F; border-radius: 10px;
+    font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .btn-outline:hover { background: #E8F3EE; }
+  .btn-ghost {
+    padding: 10px 20px; background: transparent; color: #6B7280;
+    border: 1.5px solid #D1D5DB; border-radius: 10px;
+    font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .btn-danger {
+    padding: 10px 20px; background: white; color: #DC2626;
+    border: 1.5px solid #DC2626; border-radius: 10px;
+    font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .btn-secondary {
+    padding: 10px 20px; background: #F3F4F6; color: #1a1a1a;
+    border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .footer-note { text-align: center; font-size: 13px; color: #9CA3AF; margin-top: 14px; }
+
+  .materials-list { margin-top: 12px; }
+  .material-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F3F4F6; font-size: 15px; }
+  .material-row:last-child { border-bottom: none; }
+  .material-row .name { color: #4B5563; }
+  .material-row .qty { color: #1a1a1a; font-weight: 500; }
+  .material-row .price { color: #6B7280; font-size: 13px; margin-left: 8px; }
+  .total-row {
+    display: flex; justify-content: space-between; padding-top: 12px;
+    margin-top: 8px; border-top: 2px solid #E5E7EB; font-weight: 700; font-size: 16px;
+  }
+
+  .section-header { display: flex; justify-content: space-between; align-items: baseline; margin: 24px 0 4px; }
+  .section-title { font-size: 20px; font-weight: 700; color: #1a1a1a; }
+  .section-count { font-size: 14px; color: #6B7280; }
+  .section-sub { font-size: 13px; color: #9CA3AF; margin-bottom: 12px; }
+
+  .executor-card {
+    background: white; border-radius: 16px; padding: 18px; margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .executor-card:active { transform: scale(0.99); }
+  .executor-card.best { background: #E8F3EE; border: 2px solid #2D7A5F; }
+  .executor-card.warning { background: #FEF3C7; border: 2px solid #F59E0B; }
+  .executor-card.danger { background: #FEE2E2; border: 2px solid #DC2626; opacity: 0.9; }
+
+  .profit-badge, .warning-badge, .danger-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 14px;
+  }
+  .profit-badge { background: #2D7A5F; color: white; }
+  .warning-badge { background: #F59E0B; color: white; }
+  .danger-badge { background: #DC2626; color: white; }
+
+  .executor-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .executor-info-row { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; flex-shrink: 0;
+  }
+  .avatar.green { background: #D4E8DE; color: #2D7A5F; }
+  .avatar.gray { background: #E5E7EB; color: #6B7280; }
+  .avatar.orange { background: #FED7AA; color: #C2410C; }
+  .avatar.red { background: #FECACA; color: #DC2626; }
+  .executor-name { font-size: 17px; font-weight: 700; color: #1a1a1a; }
+  .executor-sub { font-size: 13px; color: #6B7280; margin-top: 2px; }
+  .rating { display: flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .rating .star { color: #F59E0B; }
+  .executor-meta { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #6B7280; margin-bottom: 10px; flex-wrap: wrap; }
+  .executor-meta .dot { color: #D1D5DB; }
+  .executor-cost { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+  .executor-cost .label { color: #6B7280; }
+  .executor-cost .value { font-weight: 600; color: #1a1a1a; }
+  .executor-profit-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 12px; margin-top: 8px; border-top: 1px solid rgba(0,0,0,0.08);
+  }
+  .profit-label { font-size: 13px; color: #6B7280; margin-bottom: 2px; }
+  .profit-value { font-size: 26px; font-weight: 700; color: #2D7A5F; }
+  .profit-value.warning { color: #D97706; }
+  .profit-value.danger { color: #DC2626; }
+  .margin-pct {
+    display: inline-block; padding: 3px 8px; border-radius: 6px;
+    font-size: 11px; font-weight: 700; margin-top: 4px;
+  }
+  .margin-pct.high { background: #D1FAE5; color: #065F46; }
+  .margin-pct.medium { background: #FEF3C7; color: #92400E; }
+  .margin-pct.low { background: #FEE2E2; color: #991B1B; }
+
+  .queue-item {
+    background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04); border-left: 4px solid #F59E0B;
+  }
+  .queue-item.synced { border-left-color: #2D7A5F; }
+  .queue-item.error { border-left-color: #DC2626; }
+  .queue-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .queue-title { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+  .queue-status { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .queue-status.pending { background: #FEF3C7; color: #D97706; }
+  .queue-status.synced { background: #E8F3EE; color: #2D7A5F; }
+  .queue-status.error { background: #FEE2E2; color: #DC2626; }
+  .queue-info { font-size: 13px; color: #6B7280; margin-bottom: 10px; }
+  .queue-actions { display: flex; gap: 8px; }
+  .queue-btn {
+    flex: 1; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; font-family: inherit;
+  }
+  .queue-btn.primary { background: #2D7A5F; color: white; }
+  .queue-btn.secondary { background: #F3F4F6; color: #6B7280; }
+
+  .modal-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); display: none;
+    align-items: flex-end; justify-content: center; z-index: 500;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: white; border-radius: 24px 24px 0 0;
+    padding: 24px 20px 40px; width: 100%; max-height: 80%; overflow-y: auto;
+    animation: slideUp 0.3s;
+  }
+  .modal-handle {
+    width: 40px; height: 4px; background: #D1D5DB;
+    border-radius: 2px; margin: 0 auto 20px;
+  }
+  .modal-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px; font-size: 32px;
+  }
+  .modal-icon.warning { background: #FEF3C7; }
+  .modal-icon.success { background: #E8F3EE; }
+  .modal-icon.danger { background: #FEE2E2; }
+  .modal-title { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 12px; color: #1a1a1a; }
+  .modal-text { font-size: 15px; color: #6B7280; text-align: center; line-height: 1.5; margin-bottom: 24px; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions button { flex: 1; padding: 16px; }
+
+  .toast {
+    position: absolute; top: 100px; left: 20px; right: 20px;
+    background: #1a1a1a; color: white; padding: 14px 18px;
+    border-radius: 12px; font-size: 14px; font-weight: 500;
+    display: none; align-items: center; gap: 10px; z-index: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .toast.active { display: flex; animation: slideDown 0.3s; }
+  .toast-icon { font-size: 20px; }
+
+  .network-toggle {
+    position: absolute; top: 110px; right: 20px;
+    background: white; padding: 8px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer; z-index: 200; display: flex; align-items: center; gap: 6px;
+    border: 1px solid #E5E7EB;
+  }
+  .network-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: #2D7A5F; }
+  .network-toggle.offline .dot { background: #DC2626; }
+
+  .bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 88px;
+    background: white; border-top: 1px solid #E5E7EB;
+    display: flex; justify-content: space-around; align-items: flex-start;
+    padding: 12px 20px 0; z-index: 50;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    cursor: pointer; color: #9CA3AF; flex: 1;
+    background: none; border: none; font-family: inherit; position: relative;
+  }
+  .nav-item.active { color: #2D7A5F; }
+  .nav-icon { font-size: 22px; }
+  .nav-label { font-size: 11px; font-weight: 500; }
+  .nav-badge {
+    position: absolute; top: -4px; right: 50%; transform: translateX(14px);
+    background: #DC2626; color: white; font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 10px; min-width: 18px; text-align: center;
+  }
+
+  .home-indicator {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    width: 134px; height: 5px; background: #1a1a1a; border-radius: 3px; z-index: 1000;
+  }
+
+  .material-admin-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 0; border-bottom: 1px solid #F3F4F6;
+  }
+  .material-admin-item:last-child { border-bottom: none; }
+  .material-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: #E8F3EE; color: #2D7A5F;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .material-info { flex: 1; min-width: 0; }
+  .material-name { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .material-meta { font-size: 12px; color: #6B7280; margin-top: 2px; }
+  .material-norm {
+    display: flex; align-items: center; gap: 6px;
+    background: #F5F6F8; padding: 6px 10px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; color: #2D7A5F; cursor: pointer;
+  }
+
+  .deviation-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 0; border-bottom: 1px solid #F3F4F6;
+  }
+  .deviation-item:last-child { border-bottom: none; }
+  .deviation-item.critical {
+    background: #FEE2E2; margin: 0 -20px; padding: 14px 20px; border-radius: 12px;
+  }
+  .deviation-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .deviation-icon.ok { background: #E8F3EE; color: #2D7A5F; }
+  .deviation-icon.bad { background: #FEE2E2; color: #DC2626; }
+  .deviation-info { flex: 1; }
+  .deviation-title { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+  .deviation-sub { font-size: 12px; color: #6B7280; margin-top: 2px; }
+  .deviation-value { font-size: 14px; font-weight: 700; text-align: right; }
+  .deviation-value.ok { color: #2D7A5F; }
+  .deviation-value.bad { color: #DC2626; }
+
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .screen.active { animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
 </head>
 <body>
-    <div class="mobile-frame">
-        <!-- Статус бар -->
-        <div class="status-bar">
-            <span class="time">9:41</span>
-            <div class="icons">
-                <span>📶</span>
-                <span>📡</span>
-                <span>🔋</span>
-            </div>
+
+<div class="iphone-frame">
+  <div class="dynamic-island"></div>
+
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons"><span>📶</span><span>📡</span><span>🔋</span></div>
+  </div>
+
+  <div class="connection-status online" id="connectionStatus">
+    <span id="connectionText">● Онлайн · Санкт-Петербург</span>
+  </div>
+
+  <div class="network-toggle" id="networkToggle" onclick="toggleNetwork()">
+    <span class="dot"></span>
+    <span id="networkLabel">Онлайн</span>
+  </div>
+
+  <!-- Хедер (скрыт на welcome screen) -->
+  <div class="app-header" id="appHeader">
+    <button class="back-btn" onclick="goBack()">
+      <span>‹</span><span>Назад</span>
+    </button>
+    <div class="logo" onclick="showScreen('welcome')" style="cursor: pointer;">
+      <div class="logo-icon">✦</div>
+      <span>Чисто.</span>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="toastIcon">✓</span>
+    <span id="toastText">Действие выполнено</span>
+  </div>
+
+  <div class="content" id="mainContent">
+
+    <!-- ============ WELCOME SCREEN ============ -->
+    <div class="screen active" id="screen-welcome">
+      <div class="welcome-hero">
+        <div class="welcome-logo-wrap">
+          <div class="welcome-logo-ring-2"></div>
+          <div class="welcome-logo-ring"></div>
+          <div class="welcome-logo">✦</div>
         </div>
-
-        <!-- Header -->
-        <div class="app-header">
-            <div class="back-btn" onclick="navigateTo('home')">
-                <span>‹</span>
-                <span>Назад</span>
-            </div>
-            <div class="logo">
-                <div class="logo-icon">✨</div>
-                <span>Оптимизатотр клининга</span>
-            </div>
+        <div class="welcome-title">Чисто.</div>
+        <div class="welcome-tagline">Считаем чисто. Зарабатываем точно.</div>
+        <div class="welcome-subtitle">
+          Автоматизированный расчёт чистой прибыли<br>и подбор исполнителей для клининга
         </div>
-
-        <!-- Контент -->
-        <div class="screen-content">
-            <!-- Экран 1: Новый заказ -->
-            <div class="screen active" id="screen-new-order">
-                <h1 class="screen-title">Новый заказ</h1>
-                <p class="screen-subtitle">Укажите параметры — рассчитаем стоимость.</p>
-
-                <div class="card">
-                    <h3 class="card-title">Параметры</h3>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Площадь (кв.м)</label>
-                        <div class="input-with-unit">
-                            <input type="number" class="form-input" value="65" id="area-input">
-                            <span class="input-unit">м²</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Тип уборки</label>
-                        <div class="selector">
-                            <div class="selector-item active" onclick="selectType(this)">Стандартная</div>
-                            <div class="selector-item" onclick="selectType(this)">После ремонта</div>
-                            <div class="selector-item" onclick="selectType(this)">Генеральная</div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Типы поверхностей</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item checked">
-                                <input type="checkbox" checked>
-                                <span>Плитка</span>
-                            </label>
-                            <label class="checkbox-item checked">
-                                <input type="checkbox" checked>
-                                <span>Ламинат</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox">
-                                <span>Ковролин</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox">
-                                <span>Стекла</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Степень загрязнения</label>
-                        <div class="slider-container">
-                            <input type="range" min="1" max="3" value="2" id="pollution-slider" oninput="updateSlider(this.value)">
-                            <div class="slider-labels">
-                                <span>1 - Слабая</span>
-                                <span class="active" id="slider-label">2 - Средняя</span>
-                                <span>3 - Сильная</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Адрес</h3>
-                        <span class="text-muted">🗺 Подсказки по карте</span>
-                    </div>
-                    
-                    <input type="text" class="form-input" placeholder="Начните вводить адрес..." id="address-input" oninput="showAutocomplete(this.value)">
-                    
-                    <div class="autocomplete-list" id="autocomplete" style="display: none;">
-                        <div class="autocomplete-item" onclick="selectAddress('Лесная улица, 5', 'Москва · Тверской район')">
-                            <span class="autocomplete-icon">📍</span>
-                            <div class="autocomplete-text">
-                                <div class="autocomplete-title">Лесная улица, 5</div>
-                                <div class="autocomplete-subtitle">Москва · Тверской район</div>
-                            </div>
-                        </div>
-                        <div class="autocomplete-item" onclick="selectAddress('Лесная улица, 7', 'Москва · Тверской район')">
-                            <span class="autocomplete-icon"></span>
-                            <div class="autocomplete-text">
-                                <div class="autocomplete-title">Лесная улица, 7</div>
-                                <div class="autocomplete-subtitle">Москва · Тверской район</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <p class="text-muted" style="margin-top: 12px;">Выберите дом из списка. Квартиру уточним позже.</p>
-                </div>
-
-                <button class="btn-primary" onclick="navigateTo('executor-selection')">
-                    Рассчитать стоимость и подобрать клинера
-                </button>
-                
-                <p class="text-muted" style="text-align: center; margin-top: 12px; font-size: 12px;">
-                    Расчёт бесплатный и ни к чему не обязывает
-                </p>
-            </div>
-
-            <!-- Экран 2: Подбор исполнителя -->
-            <div class="screen" id="screen-executor-selection">
-                <h1 class="screen-title">Подбор исполнителя</h1>
-                <p class="screen-subtitle">Выберите клинера с лучшей прибылью.</p>
-
-                <div class="card">
-                    <div class="info-row">
-                        <div>
-                            <div class="info-label">Адрес заказа</div>
-                            <div style="font-weight: 600; margin-top: 4px;">Лесная улица, 5</div>
-                            <div class="text-muted">Москва · Тверской район</div>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="info-row">
-                        <div>
-                            <div class="info-label">Площадь</div>
-                            <div class="info-value" style="font-size: 20px;">65 м²</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div class="info-label">Выручка</div>
-                            <div class="info-value large">6 000 руб.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Плановые материалы</h3>
-                        <span style="color: #059669;"></span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Стеклоочиститель</span>
-                        <span class="info-value">200 мл</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Шампунь</span>
-                        <span class="info-value">500 мл</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Средство для пола</span>
-                        <span class="info-value">300 мл</span>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="info-row">
-                        <span class="info-label" style="font-weight: 600;">Итого</span>
-                        <span class="info-value" style="font-size: 18px;">450 руб.</span>
-                    </div>
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; margin: 24px 0 16px;">
-                    <h3 class="section-title" style="margin: 0;">Доступные исполнители</h3>
-                    <span class="badge">2 клинера</span>
-                </div>
-                <p class="text-muted" style="margin-bottom: 16px;">По убыванию чистой прибыли</p>
-
-                <!-- Исполнитель 1 (лучший) -->
-                <div class="executor-card best">
-                    <div class="executor-badge">📈 Максимальная прибыль</div>
-                    
-                    <div class="executor-header">
-                        <div class="executor-name">
-                            <div class="executor-avatar">ИИ</div>
-                            <div class="executor-info">
-                                <h4>Иванов И.И.</h4>
-                            </div>
-                        </div>
-                        <div class="executor-rating">
-                            <span>⭐</span>
-                            <span>4.9</span>
-                        </div>
-                    </div>
-
-                    <div class="executor-stats">
-                        <span>🕐 3.5 часа</span>
-                        <span> Логистика: 120 руб.</span>
-                    </div>
-
-                    <div class="info-row" style="border: none; padding: 8px 0;">
-                        <span class="info-label">Себестоимость</span>
-                        <span class="info-value">1 850 руб.</span>
-                    </div>
-
-                    <div class="executor-profit">
-                        <div>
-                            <div class="profit-label">Чистая прибыль</div>
-                            <div class="profit-value">4 150 руб.</div>
-                        </div>
-                        <button class="btn-secondary" onclick="assignExecutor('Иванов И.И.')">Назначить</button>
-                    </div>
-                </div>
-
-                <!-- Исполнитель 2 -->
-                <div class="executor-card">
-                    <div class="executor-header">
-                        <div class="executor-name">
-                            <div class="executor-avatar" style="background: #f3f4f6; color: #6b7280;">ПП</div>
-                            <div class="executor-info">
-                                <h4>Петров П.П.</h4>
-                            </div>
-                        </div>
-                        <div class="executor-rating">
-                            <span>⭐</span>
-                            <span>4.7</span>
-                        </div>
-                    </div>
-
-                    <div class="executor-stats">
-                        <span>🕐 5 часов</span>
-                        <span>🚗 Логистика: 450 руб.</span>
-                    </div>
-
-                    <div class="info-row" style="border: none; padding: 8px 0;">
-                        <span class="info-label">Себестоимость</span>
-                        <span class="info-value">2 600 руб.</span>
-                    </div>
-
-                    <div class="executor-profit">
-                        <div>
-                            <div class="profit-label">Чистая прибыль</div>
-                            <div class="profit-value">3 400 руб.</div>
-                        </div>
-                        <button class="btn-secondary" onclick="assignExecutor('Петров П.П.')">Назначить</button>
-                    </div>
-                </div>
-
-                <!-- Исполнитель 3 (заблокирован) -->
-                <h3 class="section-title">Не подходят по навыкам</h3>
-                
-                <div class="executor-card locked">
-                    <div class="executor-header">
-                        <div class="executor-name">
-                            <div class="executor-avatar" style="background: #f3f4f6; color: #9ca3af;">СС</div>
-                            <div class="executor-info">
-                                <h4>Сидоров С.С.</h4>
-                                <div class="text-muted" style="font-size: 13px; margin-top: 2px;">Недоступен для этого заказа</div>
-                            </div>
-                        </div>
-                        <span style="font-size: 20px;">🔒</span>
-                    </div>
-
-                    <div class="lock-reason">
-                        Нет навыка работы с парогенератором. Для этого заказа нужен клинер с этим навыком.
-                    </div>
-
-                    <div class="executor-profit">
-                        <button class="btn-secondary" style="width: 100%; opacity: 0.5; cursor: not-allowed;" disabled>
-                            🔒 Назначить
-                        </button>
-                    </div>
-                </div>
-
-                <p class="text-muted" style="text-align: center; margin-top: 20px; font-size: 12px;">
-                    Материалы и логистика учтены в себестоимости. Чистая прибыль = выручка − себестоимость.
-                </p>
-            </div>
-
-            <!-- Экран 3: Главный (список заказов) -->
-            <div class="screen" id="screen-home">
-                <h1 class="screen-title">Заказы</h1>
-                <p class="screen-subtitle">Управление активными заказами</p>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <h3 class="card-title">Заказ #1234</h3>
-                            <p class="text-muted" style="margin-top: 4px;">Лесная улица, 5 · 65 м²</p>
-                        </div>
-                        <span class="badge">В работе</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Исполнитель</span>
-                        <span class="info-value">Иванов И.И.</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Чистая прибыль</span>
-                        <span class="info-value" style="color: #059669; font-size: 18px;">4 150 руб.</span>
-                    </div>
-                    
-                    <button class="btn-secondary" style="width: 100%; margin-top: 16px;">
-                        Подробнее
-                    </button>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <h3 class="card-title">Заказ #1233</h3>
-                            <p class="text-muted" style="margin-top: 4px;">Пушкина улица, 10 · 120 м²</p>
-                        </div>
-                        <span class="badge" style="background: #fef3c7; color: #d97706;">Новый</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <span class="info-label">Выручка</span>
-                        <span class="info-value">12 000 руб.</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Статус</span>
-                        <span class="info-value">Ожидает назначения</span>
-                    </div>
-                    
-                    <button class="btn-secondary" style="width: 100%; margin-top: 16px;" onclick="navigateTo('new-order')">
-                        Подобрать исполнителя
-                    </button>
-                </div>
-            </div>
+        <div class="welcome-region">
+          📍 Санкт-Петербург · 2 филиала
         </div>
+      </div>
 
-        <!-- Нижняя навигация -->
-        <div class="bottom-nav">
-            <div class="nav-item active" onclick="navigateTo('home')">
-                <span class="nav-icon"></span>
-                <span class="nav-label">Заказы</span>
-            </div>
-            <div class="nav-item" onclick="navigateTo('new-order')">
-                <span class="nav-icon">➕</span>
-                <span class="nav-label">Новый</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon"></span>
-                <span class="nav-label">Аналитика</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">⚙️</span>
-                <span class="nav-label">Настройки</span>
-            </div>
+      <div class="welcome-section-title">Быстрый доступ</div>
+      <div class="quick-actions">
+        <div class="quick-action" onclick="showScreen('new-order')">
+          <div class="quick-action-icon green">➕</div>
+          <div class="quick-action-title">Новый заказ</div>
+          <div class="quick-action-desc">Рассчитать смету и подобрать клинера</div>
         </div>
+        <div class="quick-action" onclick="showScreen('estimate')">
+          <div class="quick-action-icon blue"></div>
+          <div class="quick-action-title">Смета</div>
+          <div class="quick-action-desc">Материалы и подбор исполнителя</div>
+        </div>
+        <div class="quick-action" onclick="showScreen('offline-queue')">
+          <div class="quick-action-icon orange"></div>
+          <div class="quick-action-title">Очередь</div>
+          <div class="quick-action-desc">Оффлайн-заказы на отправку</div>
+          <span class="quick-action-badge" id="welcomeBadge">3</span>
+        </div>
+        <div class="quick-action" onclick="showScreen('analytics')">
+          <div class="quick-action-icon purple">📊</div>
+          <div class="quick-action-title">Аналитика</div>
+          <div class="quick-action-desc">План vs Факт, отклонения</div>
+        </div>
+        <div class="quick-action" onclick="showScreen('materials')">
+          <div class="quick-action-icon red"></div>
+          <div class="quick-action-title">Справочник материалов</div>
+          <div class="quick-action-desc">Нормативы расхода и остатки на складе · 5 позиций</div>
+        </div>
+      </div>
+
+      <button class="welcome-start-btn" onclick="showScreen('new-order')">
+        Начать работу →
+      </button>
+
+      <div class="welcome-footer">
+        v 1.2.0 · Обновлено 15 октября 2026<br>
+        Санкт-Петербург · Невский пр., 28
+      </div>
     </div>
 
-    <script>
-        // Навигация между экранами
-        function navigateTo(screenName) {
-            // Скрыть все экраны
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            
-            // Показать нужный экран
-            const targetScreen = document.getElementById(`screen-${screenName}`);
-            if (targetScreen) {
-                targetScreen.classList.add('active');
-            }
+    <!-- ============ SCREEN: Новый заказ ============ -->
+    <div class="screen" id="screen-new-order">
+      <div class="steps">
+        <div class="step active"></div>
+        <div class="step"></div>
+      </div>
 
-            // Обновить активный пункт навигации
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            if (screenName === 'home') {
-                document.querySelectorAll('.nav-item')[0].classList.add('active');
-            } else if (screenName === 'new-order') {
-                document.querySelectorAll('.nav-item')[1].classList.add('active');
-            }
-        }
+      <h1 class="page-title">Новый заказ</h1>
+      <p class="page-subtitle">Шаг 1 из 2 · Параметры объекта</p>
 
-        // Выбор типа уборки
-        function selectType(element) {
-            document.querySelectorAll('.selector-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            element.classList.add('active');
-        }
+      <div class="card">
+        <div class="card-title">Параметры</div>
+        <div class="field">
+          <label class="field-label">Площадь (кв.м)</label>
+          <div class="input-wrap">
+            <input type="number" value="65" id="areaInput" oninput="recalculate()">
+            <span class="input-unit">м²</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Тип уборки</label>
+          <div class="dropdown">
+            <div class="dropdown-header open" onclick="toggleDropdown()">
+              <span id="typeSelected">Стандартная</span>
+              <span class="chevron">⌄</span>
+            </div>
+            <div class="dropdown-menu open" id="typeMenu">
+              <div class="dropdown-item selected" data-value="standard" onclick="selectType(this)">Стандартная</div>
+              <div class="dropdown-item" data-value="renovation" onclick="selectType(this)">После ремонта</div>
+              <div class="dropdown-item" data-value="general" onclick="selectType(this)">Генеральная</div>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Типы поверхностей</label>
+          <div class="checkbox-grid">
+            <label class="checkbox-item"><input type="checkbox" checked onchange="recalculate()"><span class="checkbox-box"></span><span>Плитка</span></label>
+            <label class="checkbox-item"><input type="checkbox" checked onchange="recalculate()"><span class="checkbox-box"></span><span>Ламинат</span></label>
+            <label class="checkbox-item"><input type="checkbox" onchange="recalculate()"><span class="checkbox-box"></span><span>Ковролин</span></label>
+            <label class="checkbox-item"><input type="checkbox" onchange="recalculate()"><span class="checkbox-box"></span><span>Стекла</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Степень загрязнения</label>
+          <div class="slider-wrap">
+            <div class="slider-track">
+              <div class="slider-line"></div>
+              <div class="slider-fill" id="sliderFill" style="width: 50%"></div>
+              <div class="slider-dots">
+                <div class="slider-dot" onclick="setSlider(1)"></div>
+                <div class="slider-dot active" onclick="setSlider(2)"></div>
+                <div class="slider-dot" onclick="setSlider(3)"></div>
+              </div>
+            </div>
+            <div class="slider-labels">
+              <span>1 - Слабая</span>
+              <span class="active" id="sliderLabel2">2 - Средняя</span>
+              <span>3 - Сильная</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        // Обновление слайдера
-        function updateSlider(value) {
-            const labels = ['1 - Слабая', '2 - Средняя', '3 - Сильная'];
-            document.getElementById('slider-label').textContent = labels[value - 1];
-            
-            document.querySelectorAll('.slider-labels span').forEach((span, index) => {
-                span.classList.remove('active');
-                if (index === value - 1) {
-                    span.classList.add('active');
-                }
-            });
-        }
+      <div class="card">
+        <div class="card-title">Адрес</div>
+        <div class="input-wrap">
+          <input type="text" value="Невский проспект, 28">
+        </div>
+        <p class="footer-note" style="margin-top: 10px;">Санкт-Петербург · Центральный район</p>
+      </div>
 
-        // Автокомплит адреса
-        function showAutocomplete(value) {
-            const autocomplete = document.getElementById('autocomplete');
-            if (value.length > 3) {
-                autocomplete.style.display = 'block';
-            } else {
-                autocomplete.style.display = 'none';
-            }
-        }
+      <button class="btn-primary" onclick="showScreen('estimate')">
+        Рассчитать смету →
+      </button>
+      <p class="footer-note">Расчёт бесплатный и ни к чему не обязывает</p>
+    </div>
 
-        function selectAddress(address, district) {
-            document.getElementById('address-input').value = address;
-            document.getElementById('autocomplete').style.display = 'none';
-        }
+    <!-- ============ SCREEN: Смета ============ -->
+    <div class="screen" id="screen-estimate">
+      <div class="steps">
+        <div class="step completed"></div>
+        <div class="step active"></div>
+      </div>
 
-        // Назначение исполнителя
-        function assignExecutor(name) {
-            alert(`✅ Исполнитель ${name} назначен на заказ!\n\n📱 Уведомление отправлено клинеру\n📧 Счет отправлен клиенту`);
-            navigateTo('home');
-        }
+      <h1 class="page-title">Смета и исполнитель</h1>
+      <p class="page-subtitle">Шаг 2 из 2 · Подбор оптимального клинера</p>
 
-        // Чекбоксы
-        document.querySelectorAll('.checkbox-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                if (e.target.tagName !== 'INPUT') {
-                    const checkbox = this.querySelector('input');
-                    checkbox.checked = !checkbox.checked;
-                }
-                
-                if (this.querySelector('input').checked) {
-                    this.classList.add('checked');
-                } else {
-                    this.classList.remove('checked');
-                }
-            });
-        });
-    </script>
+      <div class="card">
+        <div class="card-title">📦 Плановые материалы</div>
+        <div class="materials-list" id="materialsList">
+          <div class="material-row">
+            <span class="name">Универсальное средство</span>
+            <div><span class="qty" id="mat1-qty">500 мл</span><span class="price">· 120 ₽</span></div>
+          </div>
+          <div class="material-row">
+            <span class="name">Средство для стекол</span>
+            <div><span class="qty" id="mat2-qty">100 мл</span><span class="price">· 45 ₽</span></div>
+          </div>
+          <div class="material-row">
+            <span class="name">Средство для пола</span>
+            <div><span class="qty" id="mat3-qty">300 мл</span><span class="price">· 90 ₽</span></div>
+          </div>
+          <div class="material-row">
+            <span class="name">Шампунь для ковров</span>
+            <div><span class="qty" id="mat4-qty">200 мл</span><span class="price">· 80 ₽</span></div>
+          </div>
+          <div class="total-row">
+            <span>Итого материалы</span>
+            <span id="materialsTotal">335 ₽</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="background: #F0FDF4;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 13px; color: #6B7280;">Выручка по прайсу</div>
+            <div style="font-size: 28px; font-weight: 700; color: #2D7A5F; margin-top: 4px;">6 000 ₽</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 13px; color: #6B7280;">Площадь</div>
+            <div style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin-top: 4px;">65 м²</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">Доступные исполнители</div>
+        <div class="section-count">3 клинера</div>
+      </div>
+      <div class="section-sub">Отсортировано по убыванию чистой прибыли</div>
+
+      <div class="executor-card best" onclick="selectExecutor('Иванов И.И.', 4150, 'high')">
+        <div class="profit-badge">⭐ Рекомендовано</div>
+        <div class="executor-top">
+          <div class="executor-info-row">
+            <div class="avatar green">ИИ</div>
+            <div>
+              <div class="executor-name">Иванов И.И.</div>
+              <div class="executor-sub">Старший клинер · 3.5 км от объекта</div>
+            </div>
+          </div>
+          <div class="rating"><span class="star">★</span><span>4.9</span></div>
+        </div>
+        <div class="executor-meta">
+          <span>🕐 3.5 часа</span><span class="dot">|</span>
+          <span>Логистика: 120 ₽</span><span class="dot">|</span>
+          <span>Ставка: 400 ₽/ч</span>
+        </div>
+        <div class="executor-cost">
+          <span class="label">Себестоимость</span><span class="value">1 850 ₽</span>
+        </div>
+        <div class="executor-profit-row">
+          <div>
+            <div class="profit-label">Чистая прибыль</div>
+            <div class="profit-value">4 150 ₽</div>
+            <span class="margin-pct high">Маржа 69%</span>
+          </div>
+          <button class="btn-primary" style="width: auto; padding: 12px 20px; margin: 0; font-size: 14px;">Назначить</button>
+        </div>
+      </div>
+
+      <div class="executor-card warning" onclick="showWarningModal('Петров П.П.', 1800, 'medium')">
+        <div class="warning-badge">⚠️ Ниже среднего</div>
+        <div class="executor-top">
+          <div class="executor-info-row">
+            <div class="avatar orange">ПП</div>
+            <div>
+              <div class="executor-name">Петров П.П.</div>
+              <div class="executor-sub">Клинер · 8.2 км от объекта</div>
+            </div>
+          </div>
+          <div class="rating"><span class="star">★</span><span>4.5</span></div>
+        </div>
+        <div class="executor-meta">
+          <span>🕐 4.5 часа</span><span class="dot">|</span><span>Логистика: 380 ₽</span>
+        </div>
+        <div class="executor-cost">
+          <span class="label">Себестоимость</span><span class="value">4 200 ₽</span>
+        </div>
+        <div class="executor-profit-row">
+          <div>
+            <div class="profit-label">Чистая прибыль</div>
+            <div class="profit-value warning">1 800 ₽</div>
+            <span class="margin-pct medium">Маржа 30%</span>
+          </div>
+          <button class="btn-outline" style="padding: 12px 20px; font-size: 14px;">Выбрать</button>
+        </div>
+      </div>
+
+      <div class="executor-card danger" onclick="showDangerModal('Сидоров С.С.', 720, 'low')">
+        <div class="danger-badge">🚫 Убыточная зона</div>
+        <div class="executor-top">
+          <div class="executor-info-row">
+            <div class="avatar red">СС</div>
+            <div>
+              <div class="executor-name">Сидоров С.С.</div>
+              <div class="executor-sub">Новичок · 15.4 км от объекта</div>
+            </div>
+          </div>
+          <div class="rating"><span class="star">★</span><span>3.8</span></div>
+        </div>
+        <div class="executor-meta">
+          <span> 6 часов</span><span class="dot">|</span><span>Логистика: 680 ₽</span>
+        </div>
+        <div class="executor-cost">
+          <span class="label">Себестоимость</span><span class="value">5 280 ₽</span>
+        </div>
+        <div class="executor-profit-row">
+          <div>
+            <div class="profit-label">Чистая прибыль</div>
+            <div class="profit-value danger">720 ₽</div>
+            <span class="margin-pct low">Маржа 12% ⚠️</span>
+          </div>
+          <button class="btn-outline" style="padding: 12px 20px; font-size: 14px; border-color: #DC2626; color: #DC2626;">Выбрать</button>
+        </div>
+      </div>
+
+      <p class="footer-note" style="margin-top: 20px;">
+        💡 Материалы и логистика учтены в себестоимости.<br>
+        Чистая прибыль = выручка − себестоимость
+      </p>
+
+      <button class="btn-ghost" style="width: 100%; margin-top: 12px;" onclick="showExportModal()">
+        📄 Сформировать PDF для клиента
+      </button>
+    </div>
+
+    <!-- ============ SCREEN: Оффлайн-очередь ============ -->
+    <div class="screen" id="screen-offline-queue">
+      <h1 class="page-title">Очередь заказов</h1>
+      <p class="page-subtitle">Синхронизация с сервером</p>
+
+      <div class="card" style="background: #FEF3C7; border: 1.5px solid #F59E0B;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="font-size: 32px;">📡</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; color: #92400E; margin-bottom: 4px;">Оффлайн-режим</div>
+            <div style="font-size: 13px; color: #78350F;">Заказы сохраняются локально и будут отправлены при восстановлении связи</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">В очереди на отправку</div>
+        <div class="section-count" id="queueCount">3 заказа</div>
+      </div>
+
+      <div class="queue-item" id="queue1">
+        <div class="queue-header">
+          <div class="queue-title">Заказ #1240</div>
+          <span class="queue-status pending">⏳ Ожидает</span>
+        </div>
+        <div class="queue-info">
+          📍 Невский пр., 28 · 65 м² · Стандартная<br>
+           Создан: 15 окт, 10:23
+        </div>
+        <div class="queue-actions">
+          <button class="queue-btn secondary" onclick="showToast('', 'Открыть заказ')">Открыть</button>
+          <button class="queue-btn primary" onclick="syncOrder('queue1')">Отправить сейчас</button>
+        </div>
+      </div>
+
+      <div class="queue-item" id="queue2">
+        <div class="queue-header">
+          <div class="queue-title">Заказ #1239</div>
+          <span class="queue-status pending">⏳ Ожидает</span>
+        </div>
+        <div class="queue-info">
+          📍 Васильевский остров, 7-я линия, 12 · 120 м²<br>
+          🕐 Создан: 15 окт, 09:45
+        </div>
+        <div class="queue-actions">
+          <button class="queue-btn secondary" onclick="showToast('📋', 'Открыть заказ')">Открыть</button>
+          <button class="queue-btn primary" onclick="syncOrder('queue2')">Отправить сейчас</button>
+        </div>
+      </div>
+
+      <div class="queue-item error" id="queue3">
+        <div class="queue-header">
+          <div class="queue-title">Заказ #1238</div>
+          <span class="queue-status error"> Ошибка</span>
+        </div>
+        <div class="queue-info">
+          📍 Петроградская наб., 44 · 80 м²<br>
+           Создан: 14 окт, 18:12 · Ошибка сети
+        </div>
+        <div class="queue-actions">
+          <button class="queue-btn secondary" onclick="showToast('🔄', 'Повторная попытка...')">Повторить</button>
+          <button class="queue-btn primary" onclick="showToast('🗑', 'Заказ удалён из очереди')">Удалить</button>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">Синхронизировано</div>
+        <div class="section-count">2 заказа</div>
+      </div>
+
+      <div class="queue-item synced">
+        <div class="queue-header">
+          <div class="queue-title">Заказ #1237</div>
+          <span class="queue-status synced">✓ Отправлен</span>
+        </div>
+        <div class="queue-info">
+          📍 Московский проспект, 100 · 50 м²<br>
+          🕐 Синхронизирован: 14 окт, 16:30
+        </div>
+      </div>
+
+      <div class="queue-item synced">
+        <div class="queue-header">
+          <div class="queue-title">Заказ #1236</div>
+          <span class="queue-status synced">✓ Отправлен</span>
+        </div>
+        <div class="queue-info">
+          📍 Адмиралтейский проспект, 5 · 95 м²<br>
+          🕐 Синхронизирован: 14 окт, 14:15
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: Материалы ============ -->
+    <div class="screen" id="screen-materials">
+      <h1 class="page-title">Материалы</h1>
+      <p class="page-subtitle">Базовые нормативы расхода (US-1)</p>
+
+      <div class="card" style="background: #E8F3EE;">
+        <div style="font-size: 13px; color: #065F46; font-weight: 600; margin-bottom: 4px;">ℹ️ Важно</div>
+        <div style="font-size: 13px; color: #065F46;">Изменение норматива влияет только на новые расчёты. Сохранённые заказы не пересчитываются.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Справочник материалов</div>
+        
+        <div class="material-admin-item">
+          <div class="material-icon">🧴</div>
+          <div class="material-info">
+            <div class="material-name">Универсальное средство</div>
+            <div class="material-meta">Артикул: UN-001 · Остаток: 12.5 л</div>
+          </div>
+          <div class="material-norm" onclick="editNorm(this)"><span>8</span><span style="color: #6B7280; font-weight: 400;">мл/м²</span></div>
+        </div>
+
+        <div class="material-admin-item">
+          <div class="material-icon">🪟</div>
+          <div class="material-info">
+            <div class="material-name">Средство для стёкол</div>
+            <div class="material-meta">Артикул: GL-002 · Остаток: 5.2 л</div>
+          </div>
+          <div class="material-norm" onclick="editNorm(this)"><span>2</span><span style="color: #6B7280; font-weight: 400;">мл/м²</span></div>
+        </div>
+
+        <div class="material-admin-item">
+          <div class="material-icon">🧹</div>
+          <div class="material-info">
+            <div class="material-name">Средство для пола</div>
+            <div class="material-meta">Артикул: FL-003 · Остаток: 8.7 л</div>
+          </div>
+          <div class="material-norm" onclick="editNorm(this)"><span>5</span><span style="color: #6B7280; font-weight: 400;">мл/м²</span></div>
+        </div>
+
+        <div class="material-admin-item">
+          <div class="material-icon">🛋️</div>
+          <div class="material-info">
+            <div class="material-name">Шампунь для ковров</div>
+            <div class="material-meta">Артикул: CP-004 · Остаток: 3.1 л</div>
+          </div>
+          <div class="material-norm" onclick="editNorm(this)"><span>3</span><span style="color: #6B7280; font-weight: 400;">мл/м²</span></div>
+        </div>
+
+        <div class="material-admin-item">
+          <div class="material-icon">🧽</div>
+          <div class="material-info">
+            <div class="material-name">Обезжириватель</div>
+            <div class="material-meta">Артикул: DG-005 · Остаток: 6.4 л</div>
+          </div>
+          <div class="material-norm" onclick="editNorm(this)"><span>4</span><span style="color: #6B7280; font-weight: 400;">мл/м²</span></div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="showToast('➕', 'Открыта форма добавления материала')">
+        + Добавить материал
+      </button>
+    </div>
+
+    <!-- ============ SCREEN: Аналитика ============ -->
+    <div class="screen" id="screen-analytics">
+      <h1 class="page-title">Аналитика</h1>
+      <p class="page-subtitle">План vs Факт · Отклонения (US-5)</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div class="card" style="margin: 0; padding: 16px;">
+          <div style="font-size: 12px; color: #6B7280;">Плановая прибыль</div>
+          <div style="font-size: 22px; font-weight: 700; color: #1a1a1a; margin-top: 6px;">720 000 ₽</div>
+          <div style="font-size: 12px; color: #2D7A5F; margin-top: 4px;">↑ 27% к авг.</div>
+        </div>
+        <div class="card" style="margin: 0; padding: 16px;">
+          <div style="font-size: 12px; color: #6B7280;">Фактическая прибыль</div>
+          <div style="font-size: 22px; font-weight: 700; color: #1a1a1a; margin-top: 6px;">685 000 ₽</div>
+          <div style="font-size: 12px; color: #DC2626; margin-top: 4px;">↓ 4.9% от плана</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🚨 Требуют разбора</div>
+        <div style="font-size: 13px; color: #6B7280; margin-top: -12px; margin-bottom: 12px;">Заказы с отклонением более 10%</div>
+
+        <div class="deviation-item critical">
+          <div class="deviation-icon bad">⚠️</div>
+          <div class="deviation-info">
+            <div class="deviation-title">Заказ #1230</div>
+            <div class="deviation-sub">ЖК «Северная долина» · Ирина Морозова</div>
+          </div>
+          <div class="deviation-value bad">-18%</div>
+        </div>
+
+        <div class="deviation-item critical">
+          <div class="deviation-icon bad"></div>
+          <div class="deviation-info">
+            <div class="deviation-title">Заказ #1225</div>
+            <div class="deviation-sub">ООО «БалтСтрой» · Петров П.П.</div>
+          </div>
+          <div class="deviation-value bad">-14%</div>
+        </div>
+
+        <div class="deviation-item critical">
+          <div class="deviation-icon bad">⚠️</div>
+          <div class="deviation-info">
+            <div class="deviation-title">Заказ #1218</div>
+            <div class="deviation-sub">Елена Волкова · Сидоров С.С.</div>
+          </div>
+          <div class="deviation-value bad">-12%</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✅ В пределах нормы</div>
+
+        <div class="deviation-item">
+          <div class="deviation-icon ok">✓</div>
+          <div class="deviation-info">
+            <div class="deviation-title">Заказ #1234</div>
+            <div class="deviation-sub">Невский пр., 28 · Иванов И.И.</div>
+          </div>
+          <div class="deviation-value ok">+2%</div>
+        </div>
+
+        <div class="deviation-item">
+          <div class="deviation-icon ok">✓</div>
+          <div class="deviation-info">
+            <div class="deviation-title">Заказ #1232</div>
+            <div class="deviation-sub">Лиговский пр., 50 · Петров П.П.</div>
+          </div>
+          <div class="deviation-value ok">-3%</div>
+        </div>
+
+        <div class="deviation-item">
+          <div class="deviation-icon ok">✓</div>
+          <div class="deviation-info">
+            <div class="deviation-title">Заказ #1228</div>
+            <div class="deviation-sub">Большой пр. П.С., 30 · Иванов И.И.</div>
+          </div>
+          <div class="deviation-value ok">+5%</div>
+        </div>
+      </div>
+
+      <button class="btn-ghost" style="width: 100%;">
+        📊 Открыть полный отчёт
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ============ МОДАЛЬНЫЕ ОКНА ============ -->
+  
+  <div class="modal-overlay" id="warningModal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-icon warning">⚠️</div>
+      <div class="modal-title">Внимание!</div>
+      <div class="modal-text" id="warningText">
+        Маржа заказа составляет <b>30%</b> (ниже рекомендуемого порога 40%). Прибыль ниже среднего по компании.
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('warningModal')">Отмена</button>
+        <button class="btn-primary" onclick="confirmExecutor()">Всё равно назначить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="dangerModal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-icon danger"></div>
+      <div class="modal-title">Убыточная зона!</div>
+      <div class="modal-text" id="dangerText">
+        Маржа заказа составляет <b>12%</b> (ниже порога 15%). Этот выбор принесёт компании минимальную прибыль.
+      </div>
+      <div class="modal-actions">
+        <button class="btn-danger" onclick="closeModal('dangerModal')">Отмена</button>
+        <button class="btn-primary" style="background: #DC2626;" onclick="confirmExecutor()">Подтвердить выбор</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="exportModal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-icon success">📄</div>
+      <div class="modal-title">PDF для клиента</div>
+      <div class="modal-text">
+        Формируем коммерческое предложение. Внутренняя себестоимость и маржа <b>не будут</b> отображены в документе.
+      </div>
+      
+      <div class="card" style="background: #F9FAFB; margin-bottom: 20px;">
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Что включено в PDF:</div>
+        <div style="font-size: 13px; color: #6B7280; line-height: 1.6;">
+          ✓ Список работ и объём<br>
+          ✓ Итоговая стоимость для клиента<br>
+          ✓ Гарантийные условия<br>
+          ✓ Контакты компании<br>
+          <br>
+          <span style="color: #DC2626;">✗ Расход химии в мл</span><br>
+          <span style="color: #DC2626;">✗ Стоимость работы клинера</span><br>
+          <span style="color: #DC2626;"> Чистая прибыль компании</span>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="flex-direction: column;">
+        <button class="btn-primary" onclick="generatePDF()">📤 Отправить в мессенджер</button>
+        <button class="btn-outline" style="width: 100%;" onclick="generatePDF()">📧 Отправить на почту</button>
+        <button class="btn-secondary" style="width: 100%;" onclick="closeModal('exportModal')">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="editNormModal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-icon success">✏️</div>
+      <div class="modal-title">Изменить норматив</div>
+      <div class="modal-text" id="editNormText">
+        Текущий расход: <b>8 мл/м²</b><br><br>
+        <span style="color: #F59E0B;">⚠️ Изменение повлияет только на новые расчёты. Существующие заказы не будут пересчитаны.</span>
+      </div>
+      <div class="input-wrap" style="margin-bottom: 20px;">
+        <input type="number" value="8" id="newNormInput" style="padding: 14px 70px 14px 16px;">
+        <span class="input-unit">мл/м²</span>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('editNormModal')">Отмена</button>
+        <button class="btn-primary" onclick="saveNorm()">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ НИЖНЯЯ НАВИГАЦИЯ ============ -->
+  <div class="bottom-nav" id="bottomNav">
+    <button class="nav-item" data-screen="new-order" onclick="showScreen('new-order')">
+      <span class="nav-icon">➕</span>
+      <span class="nav-label">Новый</span>
+    </button>
+    <button class="nav-item" data-screen="estimate" onclick="showScreen('estimate')">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Смета</span>
+    </button>
+    <button class="nav-item" data-screen="offline-queue" onclick="showScreen('offline-queue')">
+      <span class="nav-icon">📡</span>
+      <span class="nav-label">Очередь</span>
+      <span class="nav-badge" id="queueBadge">3</span>
+    </button>
+    <button class="nav-item" data-screen="materials" onclick="showScreen('materials')">
+      <span class="nav-icon">🧴</span>
+      <span class="nav-label">Материалы</span>
+    </button>
+    <button class="nav-item" data-screen="analytics" onclick="showScreen('analytics')">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">Аналитика</span>
+    </button>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  const screenHistory = ['welcome'];
+  let isOnline = true;
+  let queueCount = 3;
+  let currentExecutor = null;
+
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById('screen-' + name);
+    if (target) target.classList.add('active');
+
+    // Показывать/скрывать хедер и нижнюю навигацию на welcome screen
+    const header = document.getElementById('appHeader');
+    const nav = document.getElementById('bottomNav');
+    const content = document.getElementById('mainContent');
+    const connStatus = document.getElementById('connectionStatus');
+    const netToggle = document.getElementById('networkToggle');
+
+    if (name === 'welcome') {
+      header.style.display = 'none';
+      nav.style.display = 'none';
+      content.style.height = '100%';
+      connStatus.style.display = 'none';
+      netToggle.style.display = 'none';
+    } else {
+      header.style.display = 'flex';
+      nav.style.display = 'flex';
+      content.style.height = 'calc(100% - 54px - 88px)';
+      connStatus.style.display = 'block';
+      netToggle.style.display = 'flex';
+    }
+
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const navBtn = document.querySelector(`.nav-item[data-screen="${name}"]`);
+    if (navBtn) navBtn.classList.add('active');
+
+    if (screenHistory[screenHistory.length - 1] !== name) {
+      screenHistory.push(name);
+    }
+    if (content) content.scrollTop = 0;
+  }
+
+  function goBack() {
+    screenHistory.pop();
+    const prev = screenHistory[screenHistory.length - 1] || 'welcome';
+    showScreen(prev);
+  }
+
+  function toggleDropdown() {
+    const header = document.querySelector('.dropdown-header');
+    const menu = document.getElementById('typeMenu');
+    header.classList.toggle('open');
+    menu.classList.toggle('open');
+  }
+
+  function selectType(el) {
+    document.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('typeSelected').textContent = el.textContent;
+    setTimeout(() => {
+      document.querySelector('.dropdown-header').classList.remove('open');
+      document.getElementById('typeMenu').classList.remove('open');
+    }, 150);
+    recalculate();
+  }
+
+  function setSlider(value) {
+    document.querySelectorAll('.slider-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === value - 1);
+    });
+    document.getElementById('sliderFill').style.width = ((value - 1) / 2 * 100) + '%';
+    document.querySelectorAll('.slider-labels span').forEach((s, i) => {
+      s.classList.toggle('active', i === value - 1);
+    });
+    recalculate();
+  }
+
+  function recalculate() {
+    const area = parseInt(document.getElementById('areaInput').value) || 0;
+    const pollution = Array.from(document.querySelectorAll('.slider-dot')).findIndex(d => d.classList.contains('active')) + 1 || 2;
+    
+    const baseNorms = { mat1: 8, mat2: 2, mat3: 5, mat4: 3 };
+    const prices = { mat1: 0.24, mat2: 0.45, mat3: 0.30, mat4: 0.40 };
+    const coeffs = { 1: 0.8, 2: 1.0, 3: 1.5 };
+    const coeff = coeffs[pollution] || 1;
+
+    for (let key in baseNorms) {
+      const qty = Math.round(baseNorms[key] * area * coeff);
+      const el = document.getElementById(key + '-qty');
+      if (el) el.textContent = qty + ' мл';
+    }
+
+    const total = Math.round((baseNorms.mat1 * prices.mat1 + baseNorms.mat2 * prices.mat2 + baseNorms.mat3 * prices.mat3 + baseNorms.mat4 * prices.mat4) * area * coeff);
+    const totalEl = document.getElementById('materialsTotal');
+    if (totalEl) totalEl.textContent = total + ' ₽';
+  }
+
+  function toggleNetwork() {
+    isOnline = !isOnline;
+    const status = document.getElementById('connectionStatus');
+    const text = document.getElementById('connectionText');
+    const toggle = document.getElementById('networkToggle');
+    const label = document.getElementById('networkLabel');
+    const badge = document.getElementById('queueBadge');
+    const welcomeBadge = document.getElementById('welcomeBadge');
+
+    if (isOnline) {
+      status.className = 'connection-status online';
+      text.textContent = '● Онлайн · Санкт-Петербург';
+      toggle.classList.remove('offline');
+      label.textContent = 'Онлайн';
+      badge.style.display = 'none';
+      welcomeBadge.style.display = 'none';
+      showToast('📡', 'Соединение восстановлено. Синхронизация...');
+      setTimeout(() => {
+        showToast('✓', 'Все заказы синхронизированы');
+        queueCount = 0;
+        badge.textContent = '0';
+        welcomeBadge.textContent = '0';
+      }, 1500);
+    } else {
+      status.className = 'connection-status offline';
+      text.textContent = '● Оффлайн · Заказы сохраняются локально';
+      toggle.classList.add('offline');
+      label.textContent = 'Оффлайн';
+      badge.style.display = 'block';
+      welcomeBadge.style.display = 'block';
+      showToast('️', 'Нет соединения. Работа в оффлайн-режиме');
+    }
+  }
+
+  function showWarningModal(name, profit, margin) {
+    currentExecutor = { name, profit, margin };
+    const marginPct = margin === 'medium' ? '30%' : '12%';
+    const threshold = margin === 'medium' ? '40%' : '15%';
+    document.getElementById('warningText').innerHTML = 
+      `Выбран исполнитель <b>${name}</b>.<br><br>Маржа заказа составляет <b>${marginPct}</b> (ниже рекомендуемого порога ${threshold}). Прибыль ниже среднего по компании.`;
+    document.getElementById('warningModal').classList.add('active');
+  }
+
+  function showDangerModal(name, profit, margin) {
+    currentExecutor = { name, profit, margin };
+    document.getElementById('dangerText').innerHTML = 
+      `Выбран исполнитель <b>${name}</b>.<br><br>Маржа заказа составляет <b>12%</b> (ниже порога 15%). Этот выбор принесёт компании минимальную прибыль.<br><br><b>Рекомендуем выбрать другого исполнителя.</b>`;
+    document.getElementById('dangerModal').classList.add('active');
+  }
+
+  function showExportModal() {
+    document.getElementById('exportModal').classList.add('active');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+
+  function selectExecutor(name, profit, margin) {
+    currentExecutor = { name, profit, margin };
+    confirmExecutor();
+  }
+
+  function confirmExecutor() {
+    if (currentExecutor) {
+      closeModal('warningModal');
+      closeModal('dangerModal');
+      showToast('✓', `${currentExecutor.name} назначен на заказ`);
+      setTimeout(() => showScreen('offline-queue'), 800);
+    }
+  }
+
+  function generatePDF() {
+    closeModal('exportModal');
+    showToast('📄', 'PDF сформирован. Открываем отправку...');
+  }
+
+  function editNorm(el) {
+    const value = el.querySelector('span').textContent;
+    document.getElementById('newNormInput').value = value;
+    document.getElementById('editNormModal').classList.add('active');
+  }
+
+  function saveNorm() {
+    const newValue = document.getElementById('newNormInput').value;
+    closeModal('editNormModal');
+    showToast('✓', `Норматив обновлён: ${newValue} мл/м². Влияет только на новые расчёты.`);
+    recalculate();
+  }
+
+  function syncOrder(id) {
+    if (!isOnline) {
+      showToast('⚠️', 'Нет соединения. Заказ останется в очереди.');
+      return;
+    }
+    const item = document.getElementById(id);
+    item.classList.remove('pending', 'error');
+    item.classList.add('synced');
+    item.style.borderLeftColor = '#2D7A5F';
+    item.querySelector('.queue-status').className = 'queue-status synced';
+    item.querySelector('.queue-status').textContent = '✓ Отправлен';
+    item.querySelector('.queue-actions').innerHTML = '<div style="font-size: 13px; color: #2D7A5F; font-weight: 600;">✓ Синхронизировано</div>';
+    queueCount--;
+    document.getElementById('queueCount').textContent = queueCount + ' заказ' + (queueCount === 1 ? '' : 'а');
+    document.getElementById('queueBadge').textContent = queueCount;
+    document.getElementById('welcomeBadge').textContent = queueCount;
+    showToast('✓', 'Заказ отправлен на сервер');
+  }
+
+  function showToast(icon, text) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastText').textContent = text;
+    toast.classList.add('active');
+    setTimeout(() => toast.classList.remove('active'), 2500);
+  }
+
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('active');
+    });
+  });
+
+  // Инициализация
+  document.getElementById('queueBadge').style.display = 'none';
+  document.getElementById('welcomeBadge').style.display = 'none';
+  showScreen('welcome');
+</script>
+
 </body>
 </html>
